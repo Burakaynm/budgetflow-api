@@ -1,0 +1,69 @@
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+
+from database import get_db
+from models import IncomeModel
+from schemas import Income
+
+router = APIRouter()
+
+
+@router.get("/incomes")
+def get_incomes(db: Session = Depends(get_db)):
+    incomes = db.query(IncomeModel).all()
+    return incomes
+
+
+@router.post("/incomes")
+def create_income(income: Income, db: Session = Depends(get_db)):
+    new_income = IncomeModel(
+        title=income.title,
+        amount=income.amount,
+        source=income.source
+    )
+
+    db.add(new_income)
+    db.commit()
+    db.refresh(new_income)
+
+    return {
+        "message": "Income created successfully",
+        "income": new_income
+    }
+
+
+@router.put("/incomes/{income_id}")
+def update_income(
+    income_id: int,
+    updated_income: Income,
+    db: Session = Depends(get_db)
+):
+    income = db.query(IncomeModel).filter(IncomeModel.id == income_id).first()
+
+    if income is None:
+        raise HTTPException(status_code=404, detail="Income not found")
+
+    income.title = updated_income.title
+    income.amount = updated_income.amount
+    income.source = updated_income.source
+
+    db.commit()
+    db.refresh(income)
+
+    return {
+        "message": "Income updated successfully",
+        "income": income
+    }
+
+
+@router.delete("/incomes/{income_id}")
+def delete_income(income_id: int, db: Session = Depends(get_db)):
+    income = db.query(IncomeModel).filter(IncomeModel.id == income_id).first()
+
+    if income is None:
+        raise HTTPException(status_code=404, detail="Income not found")
+
+    db.delete(income)
+    db.commit()
+
+    return {"message": "Income deleted successfully"}
