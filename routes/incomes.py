@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends
+from datetime import date
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 
 from database import get_db
@@ -48,7 +49,7 @@ def update_income(
     income.amount = updated_income.amount
     income.source = updated_income.source
     income.date = updated_income.date
-    
+
     db.commit()
     db.refresh(income)
 
@@ -69,3 +70,18 @@ def delete_income(income_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Income deleted successfully"}
+
+@router.get("/incomes/filter")
+def filter_incomes_by_date(
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+    db: Session = Depends(get_db)
+):
+    incomes = (
+        db.query(IncomeModel)
+        .filter(IncomeModel.date >= start_date)
+        .filter(IncomeModel.date <= end_date)
+        .all()
+    )
+
+    return incomes

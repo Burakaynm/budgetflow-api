@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends
+from datetime import date
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 
 from database import get_db
@@ -102,3 +103,18 @@ def get_expense_summary_by_category(db: Session = Depends(get_db)):
             category_summary[category] = amount
 
     return category_summary
+
+@router.get("/expenses/filter")
+def filter_expenses_by_date(
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+    db: Session = Depends(get_db)
+):
+    expenses = (
+        db.query(ExpenseModel)
+        .filter(ExpenseModel.date >= start_date)
+        .filter(ExpenseModel.date <= end_date)
+        .all()
+    )
+
+    return expenses
