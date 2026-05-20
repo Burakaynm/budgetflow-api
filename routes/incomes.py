@@ -14,6 +14,29 @@ def get_incomes(db: Session = Depends(get_db)):
     incomes = db.query(IncomeModel).all()
     return incomes
 
+@router.get("/incomes/filter")
+def filter_incomes_by_date(
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+    db: Session = Depends(get_db)
+):
+    incomes = (
+        db.query(IncomeModel)
+        .filter(IncomeModel.date >= start_date)
+        .filter(IncomeModel.date <= end_date)
+        .all()
+    )
+
+    return incomes
+
+@router.get("/incomes/{income_id}")
+def get_income_by_id(income_id: int, db: Session = Depends(get_db)):
+    income = db.query(IncomeModel).filter(IncomeModel.id == income_id).first()
+
+    if income is None:
+        raise HTTPException(status_code=404, detail="Income not found")
+
+    return income
 
 @router.post("/incomes")
 def create_income(income: Income, db: Session = Depends(get_db)):
@@ -32,7 +55,6 @@ def create_income(income: Income, db: Session = Depends(get_db)):
         "message": "Income created successfully",
         "income": new_income
     }
-
 
 @router.put("/incomes/{income_id}")
 def update_income(
@@ -70,18 +92,3 @@ def delete_income(income_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Income deleted successfully"}
-
-@router.get("/incomes/filter")
-def filter_incomes_by_date(
-    start_date: date = Query(...),
-    end_date: date = Query(...),
-    db: Session = Depends(get_db)
-):
-    incomes = (
-        db.query(IncomeModel)
-        .filter(IncomeModel.date >= start_date)
-        .filter(IncomeModel.date <= end_date)
-        .all()
-    )
-
-    return incomes

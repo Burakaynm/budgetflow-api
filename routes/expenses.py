@@ -14,6 +14,29 @@ def get_expenses(db: Session = Depends(get_db)):
     expenses = db.query(ExpenseModel).all()
     return expenses
 
+@router.get("/expenses/filter")
+def filter_expenses_by_date(
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+    db: Session = Depends(get_db)
+):
+    expenses = (
+        db.query(ExpenseModel)
+        .filter(ExpenseModel.date >= start_date)
+        .filter(ExpenseModel.date <= end_date)
+        .all()
+    )
+
+    return expenses
+
+@router.get("/expenses/{expense_id}")
+def get_expense_by_id(expense_id: int, db: Session = Depends(get_db)):
+    expense = db.query(ExpenseModel).filter(ExpenseModel.id == expense_id).first()
+
+    if expense is None:
+        raise HTTPException(status_code=404, detail="Expense not found")
+
+    return expense
 
 @router.post("/expenses")
 def create_expense(expense: Expense, db: Session = Depends(get_db)):
@@ -32,7 +55,6 @@ def create_expense(expense: Expense, db: Session = Depends(get_db)):
         "message": "Expense created successfully",
         "expense": new_expense
     }
-
 
 @router.put("/expenses/{expense_id}")
 def update_expense(
@@ -103,18 +125,3 @@ def get_expense_summary_by_category(db: Session = Depends(get_db)):
             category_summary[category] = amount
 
     return category_summary
-
-@router.get("/expenses/filter")
-def filter_expenses_by_date(
-    start_date: date = Query(...),
-    end_date: date = Query(...),
-    db: Session = Depends(get_db)
-):
-    expenses = (
-        db.query(ExpenseModel)
-        .filter(ExpenseModel.date >= start_date)
-        .filter(ExpenseModel.date <= end_date)
-        .all()
-    )
-
-    return expenses
