@@ -19,7 +19,8 @@ def create_expense(expense: Expense, db: Session = Depends(get_db)):
     new_expense = ExpenseModel(
         title=expense.title,
         amount=expense.amount,
-        category=expense.category
+        category=expense.category,
+        date=expense.date
     )
 
     db.add(new_expense)
@@ -46,6 +47,7 @@ def update_expense(
     expense.title = updated_expense.title
     expense.amount = updated_expense.amount
     expense.category = updated_expense.category
+    expense.date = updated_expense.date
 
     db.commit()
     db.refresh(expense)

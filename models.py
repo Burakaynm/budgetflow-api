@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Date
 
 from database import Base
 
@@ -10,6 +10,7 @@ class ExpenseModel(Base):
     title = Column(String)
     amount = Column(Float)
     category = Column(String)
+    date = Column(Date)
 
 
 class IncomeModel(Base):
@@ -19,3 +20,4 @@ class IncomeModel(Base):
     title = Column(String)
     amount = Column(Float)
     source = Column(String)
+    date = Column(Date)

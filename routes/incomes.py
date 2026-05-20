@@ -19,7 +19,8 @@ def create_income(income: Income, db: Session = Depends(get_db)):
     new_income = IncomeModel(
         title=income.title,
         amount=income.amount,
-        source=income.source
+        source=income.source,
+        date=income.date
     )
 
     db.add(new_income)
@@ -46,7 +47,8 @@ def update_income(
     income.title = updated_income.title
     income.amount = updated_income.amount
     income.source = updated_income.source
-
+    income.date = updated_income.date
+    
     db.commit()
     db.refresh(income)
 
