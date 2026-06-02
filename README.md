@@ -1,5 +1,7 @@
 # BudgetFlow API
 
+![API Tests](https://github.com/Burakaynm/budgetflow-api/actions/workflows/tests.yml/badge.svg)
+
 BudgetFlow API is a simple personal budget tracking backend application developed with Python and FastAPI. The application allows users to manage income and expense records, calculate budget summaries, analyze expenses by category, and export financial data as an Excel report.
 
 ## Features
