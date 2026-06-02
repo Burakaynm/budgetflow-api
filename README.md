@@ -92,6 +92,22 @@ Swagger documentation:
 http://127.0.0.1:8000/docs
 ```
 
+## Running Tests
+
+Install development dependencies:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+Run the test suite:
+
+```bash
+pytest
+```
+
+Tests use a separate SQLite database (`test_budgetflow.db`) so your local data is not affected.
+
 ## API Endpoints
 
 ### Expenses

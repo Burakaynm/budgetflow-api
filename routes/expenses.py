@@ -29,6 +29,40 @@ def filter_expenses_by_date(
 
     return expenses
 
+
+@router.get("/expenses/summary")
+def get_expense_summary(db: Session = Depends(get_db)):
+    expenses = db.query(ExpenseModel).all()
+
+    total_amount = 0
+
+    for expense in expenses:
+        total_amount += expense.amount
+
+    return {
+        "total_expense": total_amount,
+        "expense_count": len(expenses)
+    }
+
+
+@router.get("/expenses/summary/by-category")
+def get_expense_summary_by_category(db: Session = Depends(get_db)):
+    expenses = db.query(ExpenseModel).all()
+
+    category_summary = {}
+
+    for expense in expenses:
+        category = expense.category
+        amount = expense.amount
+
+        if category in category_summary:
+            category_summary[category] += amount
+        else:
+            category_summary[category] = amount
+
+    return category_summary
+
+
 @router.get("/expenses/{expense_id}")
 def get_expense_by_id(expense_id: int, db: Session = Depends(get_db)):
     expense = db.query(ExpenseModel).filter(ExpenseModel.id == expense_id).first()
@@ -92,36 +126,3 @@ def delete_expense(expense_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Expense deleted successfully"}
-
-
-@router.get("/expenses/summary")
-def get_expense_summary(db: Session = Depends(get_db)):
-    expenses = db.query(ExpenseModel).all()
-
-    total_amount = 0
-
-    for expense in expenses:
-        total_amount += expense.amount
-
-    return {
-        "total_expense": total_amount,
-        "expense_count": len(expenses)
-    }
-
-
-@router.get("/expenses/summary/by-category")
-def get_expense_summary_by_category(db: Session = Depends(get_db)):
-    expenses = db.query(ExpenseModel).all()
-
-    category_summary = {}
-
-    for expense in expenses:
-        category = expense.category
-        amount = expense.amount
-
-        if category in category_summary:
-            category_summary[category] += amount
-        else:
-            category_summary[category] = amount
-
-    return category_summary

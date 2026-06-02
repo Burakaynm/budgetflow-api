@@ -4,4 +4,5 @@ __pycache__/
 *.pyc
 .env
 budgetflow.db
+test_budgetflow.db
 budgetflow_report.xlsx
