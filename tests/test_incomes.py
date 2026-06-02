@@ -13,6 +13,17 @@ def create_income(client, payload=None):
     return response.json()["income"]
 
 
+def test_incomes_sorted_newest_first(client):
+    create_income(client, {**SAMPLE_INCOME, "title": "Old", "date": "2026-01-01"})
+    create_income(client, {**SAMPLE_INCOME, "title": "New", "date": "2026-06-01"})
+
+    response = client.get("/incomes")
+
+    assert response.status_code == 200
+    assert response.json()[0]["title"] == "New"
+    assert response.json()[1]["title"] == "Old"
+
+
 def test_create_and_list_incomes(client):
     create_income(client)
 

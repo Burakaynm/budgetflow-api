@@ -11,7 +11,11 @@ router = APIRouter()
 
 @router.get("/incomes")
 def get_incomes(db: Session = Depends(get_db)):
-    incomes = db.query(IncomeModel).all()
+    incomes = (
+        db.query(IncomeModel)
+        .order_by(IncomeModel.date.desc(), IncomeModel.id.desc())
+        .all()
+    )
     return incomes
 
 @router.get("/incomes/filter")
@@ -24,6 +28,7 @@ def filter_incomes_by_date(
         db.query(IncomeModel)
         .filter(IncomeModel.date >= start_date)
         .filter(IncomeModel.date <= end_date)
+        .order_by(IncomeModel.date.desc(), IncomeModel.id.desc())
         .all()
     )
 

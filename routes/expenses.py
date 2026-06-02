@@ -11,7 +11,11 @@ router = APIRouter()
 
 @router.get("/expenses")
 def get_expenses(db: Session = Depends(get_db)):
-    expenses = db.query(ExpenseModel).all()
+    expenses = (
+        db.query(ExpenseModel)
+        .order_by(ExpenseModel.date.desc(), ExpenseModel.id.desc())
+        .all()
+    )
     return expenses
 
 @router.get("/expenses/filter")
@@ -24,6 +28,7 @@ def filter_expenses_by_date(
         db.query(ExpenseModel)
         .filter(ExpenseModel.date >= start_date)
         .filter(ExpenseModel.date <= end_date)
+        .order_by(ExpenseModel.date.desc(), ExpenseModel.id.desc())
         .all()
     )
 

@@ -13,6 +13,17 @@ def create_expense(client, payload=None):
     return response.json()["expense"]
 
 
+def test_expenses_sorted_newest_first(client):
+    create_expense(client, {**SAMPLE_EXPENSE, "title": "Old", "date": "2026-01-01"})
+    create_expense(client, {**SAMPLE_EXPENSE, "title": "New", "date": "2026-06-01"})
+
+    response = client.get("/expenses")
+
+    assert response.status_code == 200
+    assert response.json()[0]["title"] == "New"
+    assert response.json()[1]["title"] == "Old"
+
+
 def test_create_and_list_expenses(client):
     create_expense(client)
 
